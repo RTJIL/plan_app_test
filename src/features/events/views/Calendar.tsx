@@ -17,6 +17,8 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  query,
+  where,
 } from 'firebase/firestore'
 import { auth, db } from '../../../lib/firebase'
 
@@ -49,15 +51,22 @@ export default function Calendar() {
 
   useEffect(() => {
     const fetch = async () => {
-      const store = await getDocs(collection(db, 'events'))
+      const user = auth.currentUser
+      if (!user) return
 
+      const q = query(
+        collection(db, 'events'),
+        where('userId', '==', user.uid)
+      )
+      const store = await getDocs(q)
+      
       const data = store.docs.map((doc) => ({
         id: doc.id,
         title: doc.data().title || 'Noname',
         start: new Date(doc.data().start.seconds * 1000),
         end: new Date(doc.data().end.seconds * 1000),
       }))
-
+      
       setEvents(data)
       setLoading(false)
     }
@@ -66,13 +75,13 @@ export default function Calendar() {
 
   const addEvent = async (title: string, start: Date, end: Date) => {
     const user = auth.currentUser
-    if(!user) return
+    if (!user) return
 
     const createdDoc = await addDoc(collection(db, 'events'), {
       title,
       start,
       end,
-      userId: user.uid
+      userId: user.uid,
     })
 
     setEvents([...events, { id: createdDoc.id, title, start, end }])
