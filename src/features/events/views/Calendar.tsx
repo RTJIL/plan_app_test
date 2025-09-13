@@ -3,6 +3,7 @@ import {
   dateFnsLocalizer,
   Views,
 } from 'react-big-calendar'
+import type { View } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 import { useEffect, useState } from 'react'
@@ -40,6 +41,8 @@ export default function Calendar() {
     },
   ])
   const [loading, setLoading] = useState(true)
+
+  const [view, setView] = useState<View>(Views.MONTH)
 
   const [currentDate, setCurrentDate] = useState(new Date())
 
@@ -101,6 +104,8 @@ export default function Calendar() {
         selectable
         toolbar={true}
         defaultView={Views.MONTH}
+        view={view}
+        onView={(newView) => setView(newView)}
         date={currentDate}
         onNavigate={(date) => setCurrentDate(date)}
         step={30}
@@ -116,7 +121,7 @@ export default function Calendar() {
         }}
         onSelectSlot={(info) => {
           const multipleEvents = prompt('Add another one ( use comma )')
-          
+
           if (multipleEvents) {
             multipleEvents.split(',').forEach((t) => {
               if (t.trim()) addEvent(t.trim(), info.start, info.end)
