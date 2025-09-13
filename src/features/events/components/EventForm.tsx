@@ -6,7 +6,7 @@ export default function EventForm({
   initial = {},
   onSave,
   onClose,
-  onDelete
+  onDelete,
 }: EventFormProps) {
   const [title, setTitle] = useState(initial.title || '')
   const [description, setDescription] = useState(initial.description || '')
@@ -17,10 +17,13 @@ export default function EventForm({
   )
 
   const handleSubmit = (e: React.FormEvent) => {
-    if (!initial.id) throw Error('No id found in EventForm.tsx')
-
     e.preventDefault()
-    onSave({ id: initial.id, title, description, importance, start, end })
+    if (initial.id) {
+      onSave({ id: initial.id, title, description, importance, start, end })
+    } else {
+      onSave({ title, description, importance, start, end })
+    }
+
     onClose()
   }
 
@@ -80,22 +83,26 @@ export default function EventForm({
         <div className="flex justify-end gap-2 mt-2">
           <button
             type="button"
-            className="px-3 py-1 border rounded text-red-600"
+            className="px-3 py-1 border rounded text-red-600 cursor-pointer"
             onClick={() => {
               if (initial?.id && onDelete) {
-                onDelete(initial.id) 
-                onClose() 
+                onDelete(initial.id)
+                onClose()
               }
             }}
           >
             Delete
           </button>
-          <button type="button" onClick={onClose} className="px-3 py-1 border">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-3 py-1 border cursor-pointer"
+          >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-3 py-1 bg-blue-500 text-white rounded"
+            className="px-3 py-1 bg-blue-500 text-white rounded cursor-pointer"
           >
             Save
           </button>
