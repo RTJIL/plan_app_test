@@ -9,7 +9,6 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { useEffect, useState } from 'react'
 
 import { format, parse, startOfWeek, getDay } from 'date-fns'
-import { uk } from 'date-fns/locale'
 
 import {
   collection,
@@ -19,7 +18,7 @@ import {
   deleteDoc,
   doc,
 } from 'firebase/firestore'
-import { db } from '../../../lib/firebase'
+import { auth, db } from '../../../lib/firebase'
 
 import type { Event } from '../types'
 
@@ -28,7 +27,7 @@ const localizer = dateFnsLocalizer({
   parse,
   startOfWeek: (date: Date) => startOfWeek(date, { weekStartsOn: 1 }),
   getDay,
-  locales: { uk: uk },
+  locales: {},
 })
 
 export default function Calendar() {
@@ -66,10 +65,14 @@ export default function Calendar() {
   }, [])
 
   const addEvent = async (title: string, start: Date, end: Date) => {
+    const user = auth.currentUser
+    if(!user) return
+
     const createdDoc = await addDoc(collection(db, 'events'), {
       title,
       start,
       end,
+      userId: user.uid
     })
 
     setEvents([...events, { id: createdDoc.id, title, start, end }])
@@ -93,10 +96,9 @@ export default function Calendar() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">My Calendar</h2>
+      <h2 className="text-xl font-bold mb-4">Almost google calendar</h2>
       <BigCalendar
         localizer={localizer}
-        culture="uk"
         events={events}
         startAccessor="start"
         endAccessor="end"
