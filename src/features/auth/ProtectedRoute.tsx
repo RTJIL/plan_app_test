@@ -12,7 +12,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (loading) return <div>/// Loading ///</div>
 
-  if (!user) return <Navigate to={'/auth/singIn'} state={{ from: location }} />
+  if (!user) return <Navigate to={'/auth/signIn'} state={{ from: location }} />
 
   return children
 }

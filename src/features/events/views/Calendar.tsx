@@ -100,7 +100,6 @@ export default function Calendar() {
         style={{ height: '90vh' }}
         selectable
         toolbar={true}
-        views={['month']}
         defaultView={Views.MONTH}
         date={currentDate}
         onNavigate={(date) => setCurrentDate(date)}
