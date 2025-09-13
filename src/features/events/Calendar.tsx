@@ -160,6 +160,7 @@ export default function Calendar() {
             setFormOpen(false)
           }}
           onClose={() => setFormOpen(false)}
+          onDelete={(id) => deleteEvent(id)}
         />
       )}
     </div>

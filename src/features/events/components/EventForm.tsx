@@ -6,6 +6,7 @@ export default function EventForm({
   initial = {},
   onSave,
   onClose,
+  onDelete
 }: EventFormProps) {
   const [title, setTitle] = useState(initial.title || '')
   const [description, setDescription] = useState(initial.description || '')
@@ -77,6 +78,18 @@ export default function EventForm({
           onChange={(e) => setEnd(new Date(e.target.value))}
         />
         <div className="flex justify-end gap-2 mt-2">
+          <button
+            type="button"
+            className="px-3 py-1 border rounded text-red-600"
+            onClick={() => {
+              if (initial?.id && onDelete) {
+                onDelete(initial.id) 
+                onClose() 
+              }
+            }}
+          >
+            Delete
+          </button>
           <button type="button" onClick={onClose} className="px-3 py-1 border">
             Cancel
           </button>

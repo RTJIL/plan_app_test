@@ -11,6 +11,7 @@ export type EventFormProps = {
   initial?: Partial<Event>
   onSave: (event: Event) => void
   onClose: () => void
+  onDelete?: (id: string) => void
 }
 
 export type Importance = 'low' | 'medium' | 'high'
