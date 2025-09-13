@@ -1,14 +1,12 @@
+import { useEffect, useState } from 'react'
 import {
   Calendar as BigCalendar,
   dateFnsLocalizer,
   Views,
 } from 'react-big-calendar'
 import type { View } from 'react-big-calendar'
-import 'react-big-calendar/lib/css/react-big-calendar.css'
-
-import { useEffect, useState } from 'react'
-
 import { format, parse, startOfWeek, getDay } from 'date-fns'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 import {
   collection,
@@ -20,9 +18,11 @@ import {
   query,
   where,
 } from 'firebase/firestore'
-import { auth, db } from '../../../lib/firebase'
+import { auth, db } from '../../lib/firebase'
 
-import type { Event } from '../types'
+import type { Event, Importance } from './types'
+
+import EventForm from './components/EventForm'
 
 const localizer = dateFnsLocalizer({
   format,
@@ -33,18 +33,17 @@ const localizer = dateFnsLocalizer({
 })
 
 export default function Calendar() {
-  const [events, setEvents] = useState<Event[]>([
-    {
-      id: '1',
-      title: 'Test',
-      start: new Date(),
-      end: new Date(new Date().getTime() + 60 * 60 * 1000),
-    },
-  ])
+  const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [view, setView] = useState<View>(Views.MONTH)
+  const [formOpen, setFormOpen] = useState(false)
+  const [selectedSlot, setSelectedSlot] = useState<{
+    start: Date
+    end: Date
+  } | null>(null)
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null)
 
+  const [view, setView] = useState<View>(Views.MONTH)
   const [currentDate, setCurrentDate] = useState(new Date())
 
   console.log(events)
@@ -54,26 +53,31 @@ export default function Calendar() {
       const user = auth.currentUser
       if (!user) return
 
-      const q = query(
-        collection(db, 'events'),
-        where('userId', '==', user.uid)
-      )
+      const q = query(collection(db, 'events'), where('userId', '==', user.uid))
       const store = await getDocs(q)
-      
+
       const data = store.docs.map((doc) => ({
         id: doc.id,
         title: doc.data().title || 'Noname',
+        description: doc.data().description || '',
+        importance: doc.data().importance || '',
         start: new Date(doc.data().start.seconds * 1000),
         end: new Date(doc.data().end.seconds * 1000),
       }))
-      
+
       setEvents(data)
       setLoading(false)
     }
     fetch()
   }, [])
 
-  const addEvent = async (title: string, start: Date, end: Date) => {
+  const addEvent = async (
+    title: string,
+    description: string = '',
+    importance: Importance,
+    start: Date,
+    end: Date
+  ) => {
     const user = auth.currentUser
     if (!user) return
 
@@ -84,7 +88,10 @@ export default function Calendar() {
       userId: user.uid,
     })
 
-    setEvents([...events, { id: createdDoc.id, title, start, end }])
+    setEvents([
+      ...events,
+      { id: createdDoc.id, title, description, start, end, importance },
+    ])
   }
 
   const editEvent = async (id: string, update: Partial<Event>) => {
@@ -123,23 +130,38 @@ export default function Calendar() {
         timeslots={2}
         showMultiDayTimes
         onSelectEvent={(e) => {
-          if (!e.title) return
-
-          const action = prompt('Edit event, or type delete to delete', e.title)
-
-          if (action?.toLowerCase() === 'delete' && e.id) deleteEvent(e.id)
-          else if (e.id) editEvent(e.id, { title: action })
+          setEditingEvent(e)
+          setFormOpen(true)
         }}
         onSelectSlot={(info) => {
-          const multipleEvents = prompt('Add another one ( use comma )')
-
-          if (multipleEvents) {
-            multipleEvents.split(',').forEach((t) => {
-              if (t.trim()) addEvent(t.trim(), info.start, info.end)
-            })
-          }
+          setSelectedSlot({ start: info.start, end: info.end })
+          setEditingEvent(null)
+          setFormOpen(true)
         }}
       />
+      {formOpen && (
+        <EventForm
+          initial={
+            editingEvent || {
+              start: selectedSlot?.start,
+              end: selectedSlot?.end,
+            }
+          }
+          onSave={(event) => {
+            if (event.id) editEvent(event.id, event)
+            else
+              addEvent(
+                event.title,
+                event.description,
+                event.importance,
+                event.start,
+                event.end
+              )
+            setFormOpen(false)
+          }}
+          onClose={() => setFormOpen(false)}
+        />
+      )}
     </div>
   )
 }

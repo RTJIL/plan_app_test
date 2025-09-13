@@ -1,6 +1,16 @@
 export interface Event {
   id: string
-  title: string | null
+  title: string
+  description?: string
+  importance: 'low' | 'medium' | 'high'
   start: Date
   end: Date
 }
+
+export type EventFormProps = {
+  initial?: Partial<Event>
+  onSave: (event: Event) => void
+  onClose: () => void
+}
+
+export type Importance = 'low' | 'medium' | 'high'
