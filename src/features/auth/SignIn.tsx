@@ -13,7 +13,7 @@ export default function SignIn() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const navigateFrom = location.state?.from?.pathname || '/'
+  const navigateFrom = location.state?.from?.pathname || '/events/calendar'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

@@ -7,7 +7,7 @@ import SignIn from '../features/auth/SignIn'
 import SignUp from '../features/auth/SignUp'
 import ProtectedRoute from '../features/auth/ProtectedRoute'
 
-import Calendar from '../features/events/views/Calendar'
+import Calendar from '../features/events/Calendar'
 // import List
 
 const router = createBrowserRouter([
