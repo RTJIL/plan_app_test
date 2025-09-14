@@ -22,4 +22,10 @@ export type EventFormProps = {
   onDelete?: (id: string) => void
 }
 
+export interface CustomAgendaEventProps {
+  event: Event
+  onEdit: (event: Event) => void
+  onDelete: (eventId: string) => void
+}
+
 export type Importance = 'low' | 'medium' | 'high'

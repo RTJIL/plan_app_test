@@ -23,6 +23,7 @@ import { auth, db } from '../../lib/firebase'
 import type { Event, Importance } from './types'
 
 import EventForm from './components/EventForm'
+import CustomAgendaEvent from './components/CustomAgendaEvent'
 
 const localizer = dateFnsLocalizer({
   format,
@@ -122,6 +123,11 @@ export default function Calendar() {
         selectable
         toolbar={true}
         defaultView={Views.MONTH}
+        components={{
+          agenda: {
+            event: CustomAgendaEvent,
+          },
+        }}
         view={view}
         onView={(newView) => setView(newView)}
         date={currentDate}
