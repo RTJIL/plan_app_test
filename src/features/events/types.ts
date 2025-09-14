@@ -1,29 +1,36 @@
 export interface Event {
-  id: string
-  title: string
-  description?: string
-  importance: 'low' | 'medium' | 'high'
-  start: Date
-  end: Date
+  id: string;
+  title: string;
+  description?: string;
+  importance: "low" | "medium" | "high";
+  start: Date;
+  end: Date;
 }
 
 export type EventFormSave = Partial<Event> & {
-  title: string
-  description: string
-  importance: 'low' | 'medium' | 'high'
-  start: Date
-  end: Date
-}
+  title: string;
+  description: string;
+  importance: "low" | "medium" | "high";
+  start: Date;
+  end: Date;
+};
 
 export type EventFormProps = {
-  initial?: Partial<Event>
-  onSave: (event: EventFormSave) => void
-  onClose: () => void
-  onDelete?: (id: string) => void
+  initial?: Partial<Event>;
+  onSave: (event: EventFormSave) => void;
+  onClose: () => void;
+  onDelete?: (id: string) => void;
+};
+
+export interface FilterFormProps {
+  textFilter: string;
+  setTextFilter: (v: string) => void;
+  importanceFilter: Importance | "";
+  setImportanceFilter: (v: Importance | "low") => void;
 }
 
 export interface CustomAgendaEventProps {
-  event: Event
+  event: Event;
 }
 
-export type Importance = 'low' | 'medium' | 'high'
+export type Importance = "low" | "medium" | "high";
